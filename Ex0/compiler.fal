@@ -1,0 +1,138 @@
+gOut = nil
+totalBuy = 0
+totalSell = 0
+
+function trimLine( s )
+   return s.trim()
+end
+
+function isVmFile( name )
+   return name.endsWith( ".vm" )
+end
+
+function removeVmExtension( name )
+   return name[0:-3]
+end
+
+function getLastFolderName( path )
+   parts = path.split( "/" )
+   return parts[ parts.len() - 1 ]
+end
+
+function normalizePath( path )
+   return path
+end
+
+function round2( num )
+   return num
+end
+
+function writeLineToOutput( s )
+   global gOut
+   gOut.write( s + "\n" )
+end
+
+function handleBuy( productName, amount, price )
+   global totalBuy
+
+   calc = round2( amount * price )
+
+   writeLineToOutput( "### BUY " + productName + " ###" )
+   writeLineToOutput( toString( calc ) )
+
+   totalBuy += calc
+end
+
+function handleSell( productName, amount, price )
+   global totalSell
+
+   calc = round2( amount * price )
+
+   writeLineToOutput( "$$$ CELL " + productName + " $$$" )
+   writeLineToOutput( toString( calc ) )
+
+   totalSell += calc
+end
+
+function processLine( line )
+   words = line.split( " " )
+
+   if words.len() < 4
+      return
+   end
+
+   cmd = words[0]
+   productName = words[1]
+   amount = numeric( words[2] )
+   price = numeric( words[3] )
+
+   if cmd == "buy"
+      handleBuy( productName, amount, price )
+   elif cmd == "sell" or cmd == "cell"
+      handleSell( productName, amount, price )
+   end
+end
+
+function processVmFile( fullPath, fileName )
+   inFile = InputStream( fullPath )
+   shortName = removeVmExtension( fileName )
+
+   writeLineToOutput( shortName )
+
+   line = ""
+   while inFile.readLine( line )
+      line = trimLine( line )
+
+      if line != ""
+         processLine( line )
+      end
+   end
+
+   inFile.close()
+end
+
+function main()
+   global gOut
+   global totalBuy
+   global totalSell
+
+   totalBuy = 0
+   totalSell = 0
+
+   printl( "Enter directory path:" )
+   folderPath = input()
+
+   folderPath = normalizePath( trimLine( folderPath ) )
+   folderName = getLastFolderName( folderPath )
+   outputName = folderPath + "/" + folderName + ".asm"
+
+   dirObj = Directory( folderPath )
+
+   if dirObj.error() != 0
+      printl( "Error: cannot open directory." )
+      return
+   end
+
+   gOut = OutputStream( outputName )
+
+   while fileName = dirObj.read()
+      if isVmFile( fileName )
+         fullPath = folderPath + "/" + fileName
+         processVmFile( fullPath, fileName )
+      end
+   end
+
+   buyText = "TOTAL BUY: " + toString( round2( totalBuy ) )
+   sellText = "TOTAL CELL: " + toString( round2( totalSell ) )
+
+   writeLineToOutput( buyText )
+   writeLineToOutput( sellText )
+
+   printl( buyText )
+   printl( sellText )
+
+   gOut.close()
+   printl( "Output file is ready: " + outputName )
+end
+
+main()
