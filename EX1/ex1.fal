@@ -1,0 +1,620 @@
+//Efrat Triestman 324861640
+//Shirel
+
+current_file_name = ""
+label_counter = 0
+
+
+function push_d()
+   return "@SP\n" +
+          "A=M\n" +
+          "M=D\n" +
+          "@SP\n" +
+          "M=M+1\n"
+end
+
+
+function pop_to_d()
+   return "@SP\n" +
+          "AM=M-1\n" +
+          "D=M\n"
+end
+
+
+function asm_push_constant( n )
+   return "@" + n + "\n" +
+          "D=A\n" +
+          push_d()
+end
+
+
+function asm_add()
+   return "@SP\n" +
+          "AM=M-1\n" +
+          "D=M\n" +
+          "A=A-1\n" +
+          "M=M+D\n"
+end
+
+
+function asm_sub()
+   return "@SP\n" +
+          "AM=M-1\n" +
+          "D=M\n" +
+          "A=A-1\n" +
+          "M=M-D\n"
+end
+
+
+function asm_neg()
+   return "@SP\n" +
+          "A=M-1\n" +
+          "M=-M\n"
+end
+
+
+function asm_and()
+   return "@SP\n" +
+          "AM=M-1\n" +
+          "D=M\n" +
+          "A=A-1\n" +
+          "M=M&D\n"
+end
+
+
+function asm_or()
+   return "@SP\n" +
+          "AM=M-1\n" +
+          "D=M\n" +
+          "A=A-1\n" +
+          "M=M|D\n"
+end
+
+
+function asm_not()
+   return "@SP\n" +
+          "A=M-1\n" +
+          "M=!M\n"
+end
+
+
+function asm_compare( jump_code )
+   global label_counter
+
+   id = "" + label_counter
+   label_counter = label_counter + 1
+
+   true_label = "TRUE_" + id
+   end_label = "END_" + id
+
+   return "@SP\n" +
+          "AM=M-1\n" +
+          "D=M\n" +
+          "A=A-1\n" +
+          "D=M-D\n" +
+          "@" + true_label + "\n" +
+          "D;" + jump_code + "\n" +
+          "@SP\n" +
+          "A=M-1\n" +
+          "M=0\n" +
+          "@" + end_label + "\n" +
+          "0;JMP\n" +
+          "(" + true_label + ")\n" +
+          "@SP\n" +
+          "A=M-1\n" +
+          "M=-1\n" +
+          "(" + end_label + ")\n"
+end
+
+
+function asm_eq()
+   return asm_compare( "JEQ" )
+end
+
+
+function asm_gt()
+   return asm_compare( "JGT" )
+end
+
+
+function asm_lt()
+   return asm_compare( "JLT" )
+end
+
+
+function base_symbol( segment )
+   if segment == "local"
+      return "LCL"
+   end
+
+   if segment == "argument"
+      return "ARG"
+   end
+
+   if segment == "this"
+      return "THIS"
+   end
+
+   if segment == "that"
+      return "THAT"
+   end
+
+   return ""
+end
+
+
+function is_base_segment( segment )
+   if segment == "local"
+      return true
+   end
+
+   if segment == "argument"
+      return true
+   end
+
+   if segment == "this"
+      return true
+   end
+
+   if segment == "that"
+      return true
+   end
+
+   return false
+end
+
+
+function asm_push_from_base( segment, index )
+   base = base_symbol( segment )
+
+   return "@" + index + "\n" +
+          "D=A\n" +
+          "@" + base + "\n" +
+          "D=D+M\n" +
+          "@R13\n" +
+          "M=D\n" +
+          "@R13\n" +
+          "A=M\n" +
+          "D=M\n" +
+          push_d()
+end
+
+
+function asm_pop_to_base( segment, index )
+   base = base_symbol( segment )
+
+   return "@" + index + "\n" +
+          "D=A\n" +
+          "@" + base + "\n" +
+          "D=D+M\n" +
+          "@R13\n" +
+          "M=D\n" +
+          pop_to_d() +
+          "@R13\n" +
+          "A=M\n" +
+          "M=D\n"
+end
+
+
+function temp_address_str( index )
+   if index == "0"
+      return "5"
+   end
+
+   if index == "1"
+      return "6"
+   end
+
+   if index == "2"
+      return "7"
+   end
+
+   if index == "3"
+      return "8"
+   end
+
+   if index == "4"
+      return "9"
+   end
+
+   if index == "5"
+      return "10"
+   end
+
+   if index == "6"
+      return "11"
+   end
+
+   if index == "7"
+      return "12"
+   end
+
+   return ""
+end
+
+
+function asm_push_temp( index )
+   addr = temp_address_str( index )
+
+   return "@" + addr + "\n" +
+          "D=M\n" +
+          push_d()
+end
+
+
+function asm_pop_temp( index )
+   addr = temp_address_str( index )
+
+   return pop_to_d() +
+          "@" + addr + "\n" +
+          "M=D\n"
+end
+
+
+function pointer_symbol( index )
+   if index == "0"
+      return "THIS"
+   end
+
+   if index == "1"
+      return "THAT"
+   end
+
+   return ""
+end
+
+
+function asm_push_pointer( index )
+   sym = pointer_symbol( index )
+
+   return "@" + sym + "\n" +
+          "D=M\n" +
+          push_d()
+end
+
+
+function asm_pop_pointer( index )
+   sym = pointer_symbol( index )
+
+   return pop_to_d() +
+          "@" + sym + "\n" +
+          "M=D\n"
+end
+
+
+function asm_push_static( index )
+   global current_file_name
+
+   return "@" + current_file_name + "." + index + "\n" +
+          "D=M\n" +
+          push_d()
+end
+
+
+function asm_pop_static( index )
+   global current_file_name
+
+   return pop_to_d() +
+          "@" + current_file_name + "." + index + "\n" +
+          "M=D\n"
+end
+
+
+function clean_line( line )
+   if line == nil or line == false
+      return ""
+   end
+
+   parts = line.split( "//" )
+
+   if parts == nil or parts == false
+      return ""
+   end
+
+   if parts.len() == 0
+      return ""
+   end
+
+   if parts[0] == nil or parts[0] == false
+      return ""
+   end
+
+   return parts[0].trim()
+end
+
+
+function split_words( line )
+   line = line.replace( "\t", " " )
+   raw = line.split( " " )
+   parts = []
+
+   for p in raw
+      if p != nil and p != false
+         p = p.trim()
+         if p != ""
+            parts += p
+         end
+      end
+   end
+
+   return parts
+end
+
+
+function change_ext_to_asm( path )
+   return path.replace( ".vm", ".asm" )
+end
+
+
+function get_file_name_no_ext( path )
+   path = path.replace( "\\", "/" )
+   parts = path.split( "/" )
+   name = parts[ parts.len() - 1 ]
+
+   return name.replace( ".vm", "" )
+end
+
+
+function join_path( base, name )
+   return "" + base + "/" + name
+end
+
+
+function get_name_only( path )
+   if path == nil or path == false or path == 0
+      return ""
+   end
+
+   s = "" + path
+   s = s.replace( "\\", "/" )
+   parts = s.split( "/" )
+
+   if parts == nil or parts == false or parts.len() == 0
+      return s
+   end
+
+   return "" + parts[ parts.len() - 1 ]
+end
+
+
+function is_vm_file( name )
+   if name == nil or name == false or name == 0
+      return false
+   end
+
+   s = "" + name
+
+   if s == "." or s == ".." or s == ""
+      return false
+   end
+
+   parts = s.split( "." )
+
+   if parts == nil or parts == false
+      return false
+   end
+
+   if parts.len() < 2
+      return false
+   end
+
+   if parts[ parts.len() - 1 ] == "vm"
+      return true
+   end
+
+   return false
+end
+
+
+function looks_like_folder( name )
+   if name == nil or name == false or name == 0
+      return false
+   end
+
+   s = "" + name
+
+   if s == "." or s == ".." or s == ""
+      return false
+   end
+
+   parts = s.split( "." )
+
+   if parts == nil or parts == false
+      return false
+   end
+
+   if parts.len() == 1
+      return true
+   end
+
+   return false
+end
+
+function translate_push( segment, index )
+   if segment == "constant"
+      return asm_push_constant( index )
+   end
+
+   if is_base_segment( segment )
+      return asm_push_from_base( segment, index )
+   end
+
+   if segment == "temp"
+      return asm_push_temp( index )
+   end
+
+   if segment == "pointer"
+      return asm_push_pointer( index )
+   end
+
+   if segment == "static"
+      return asm_push_static( index )
+   end
+
+   return ""
+end
+
+
+function translate_pop( segment, index )
+   if is_base_segment( segment )
+      return asm_pop_to_base( segment, index )
+   end
+
+   if segment == "temp"
+      return asm_pop_temp( index )
+   end
+
+   if segment == "pointer"
+      return asm_pop_pointer( index )
+   end
+
+   if segment == "static"
+      return asm_pop_static( index )
+   end
+
+   return ""
+end
+
+
+function translate_line( line )
+   parts = split_words( line )
+
+   if parts.len() == 0
+      return ""
+   end
+
+   if parts.len() == 1
+      if parts[0] == "add"
+         return asm_add()
+      end
+
+      if parts[0] == "sub"
+         return asm_sub()
+      end
+
+      if parts[0] == "neg"
+         return asm_neg()
+      end
+
+      if parts[0] == "and"
+         return asm_and()
+      end
+
+      if parts[0] == "or"
+         return asm_or()
+      end
+
+      if parts[0] == "not"
+         return asm_not()
+      end
+
+      if parts[0] == "eq"
+         return asm_eq()
+      end
+
+      if parts[0] == "gt"
+         return asm_gt()
+      end
+
+      if parts[0] == "lt"
+         return asm_lt()
+      end
+   end
+
+   if parts.len() == 3
+      if parts[0] == "push"
+         return translate_push( parts[1], parts[2] )
+      end
+
+      if parts[0] == "pop"
+         return translate_pop( parts[1], parts[2] )
+      end
+   end
+
+   return ""
+end
+
+function translate_file( in_path )
+   global current_file_name
+
+   current_file_name = get_file_name_no_ext( in_path )
+   out_path = change_ext_to_asm( in_path )
+
+   printl( "writing file: " + out_path )
+
+   content = readURI( in_path )
+   lines = content.split( "\n" )
+
+   result = ""
+
+   for l in lines
+      line = clean_line( l )
+
+      if line == ""
+         continue
+      end
+
+      asm = translate_line( line )
+
+      if asm != ""
+        result += "// " + line + "\n"
+        result += asm
+        result += "\n"
+      else
+         printl( "unsupported: " + line )
+      end
+   end
+
+   writeURI( out_path, result )
+   printl( "done: " + out_path )
+end
+
+function walk_tree( root )
+   d = Directory( root )
+
+   if d.error() != 0
+      printl( "cannot open: " + root )
+      return
+   end
+
+   printl( "enter dir: " + root )
+
+   while true
+      item = d.read()
+
+      if item == nil or item == false or item == 0
+         break
+      end
+
+      name = "" + item
+
+      if name == "." or name == ".."
+         continue
+      end
+
+      full = join_path( root, name )
+      printl( "seen: " + full )
+
+      if looks_like_folder( name )
+         printl( "go into dir: " + full )
+         walk_tree( full )
+         continue
+      end
+
+      if is_vm_file( name )
+         printl( "translate vm: " + full )
+         translate_file( full )
+      end
+   end
+
+   d.close()
+end
+
+
+function main()
+   walk_tree( "07" )
+end
+
+
+main()
+
