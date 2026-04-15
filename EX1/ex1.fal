@@ -401,7 +401,7 @@ function is_vm_file( name )
    if parts == nil or parts == false
       return false
    end
-
+   
    if parts.len() < 2
       return false
    end
