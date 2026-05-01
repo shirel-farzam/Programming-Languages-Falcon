@@ -299,22 +299,6 @@ function asm_pop_static( index )
           "M=D\n"
 end
 
-function asm_label( name )
-   return "(" + name + ")\n"
-end
-
-
-function asm_goto( name )
-   return "@" + name + "\n" +
-          "0;JMP\n"
-end
-
-
-function asm_if_goto( name )
-   return pop_to_d() +
-          "@" + name + "\n" +
-          "D;JNE\n"
-end
 
 function clean_line( line )
    if line == nil or line == false
@@ -537,20 +521,6 @@ function translate_line( line )
       end
    end
 
-   if parts.len() == 2
-      if parts[0] == "label"
-         return asm_label( parts[1] )
-      end
-
-      if parts[0] == "goto"
-         return asm_goto( parts[1] )
-      end
-
-      if parts[0] == "if-goto"
-         return asm_if_goto( parts[1] )
-      end
-   end
-
    if parts.len() == 3
       if parts[0] == "push"
          return translate_push( parts[1], parts[2] )
@@ -637,12 +607,14 @@ function walk_tree( root )
       end
    end
 
-   d.close();
+   d.close()
 end
 
+
 function main()
-   walk_tree( "08" )
+   walk_tree( "07" )
 end
+
 
 main()
 
