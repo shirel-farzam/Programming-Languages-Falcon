@@ -316,6 +316,147 @@ function asm_if_goto( name )
           "D;JNE\n"
 end
 
+function asm_function( name, n_locals )
+   result = "(" + name + ")\n"
+
+   if n_locals == "0"
+      return result
+   end
+
+   if n_locals == "1"
+      result += asm_push_constant( "0" )
+      return result
+   end
+
+   if n_locals == "2"
+      result += asm_push_constant( "0" )
+      result += asm_push_constant( "0" )
+      return result
+   end
+
+   if n_locals == "3"
+      result += asm_push_constant( "0" )
+      result += asm_push_constant( "0" )
+      result += asm_push_constant( "0" )
+      return result
+   end
+
+   if n_locals == "4"
+      result += asm_push_constant( "0" )
+      result += asm_push_constant( "0" )
+      result += asm_push_constant( "0" )
+      result += asm_push_constant( "0" )
+      return result
+   end
+
+   if n_locals == "5"
+      result += asm_push_constant( "0" )
+      result += asm_push_constant( "0" )
+      result += asm_push_constant( "0" )
+      result += asm_push_constant( "0" )
+      result += asm_push_constant( "0" )
+      return result
+   end
+
+   return result
+end
+
+function asm_call( name, n_args )
+   global label_counter
+
+   id = "" + label_counter
+   label_counter = label_counter + 1
+
+   ret = "RET_" + id
+
+   result = ""
+
+   // push return address
+   result += "@" + ret + "\n" +
+             "D=A\n" +
+             push_d()
+
+   // push LCL
+   result += "@LCL\nD=M\n" + push_d()
+
+   // push ARG
+   result += "@ARG\nD=M\n" + push_d()
+
+   // push THIS
+   result += "@THIS\nD=M\n" + push_d()
+
+   // push THAT
+   result += "@THAT\nD=M\n" + push_d()
+
+   // ARG = SP - n_args - 5
+   result += "@SP\nD=M\n@" + n_args + "\nD=D-A\n@5\nD=D-A\n@ARG\nM=D\n"
+
+   // LCL = SP
+   result += "@SP\nD=M\n@LCL\nM=D\n"
+
+   // goto function
+   result += "@" + name + "\n0;JMP\n"
+
+   // return label
+   result += "(" + ret + ")\n"
+
+   return result
+end
+
+function asm_return()
+   result = "@LCL\n" +
+            "D=M\n" +
+            "@R13\n" +
+            "M=D\n" +
+
+            "@5\n" +
+            "A=D-A\n" +
+            "D=M\n" +
+            "@R14\n" +
+            "M=D\n"
+
+   result += pop_to_d()
+
+   result += "@ARG\n" +
+             "A=M\n" +
+             "M=D\n" +
+
+             "@ARG\n" +
+             "D=M+1\n" +
+             "@SP\n" +
+             "M=D\n" +
+
+             "@R13\n" +
+             "AM=M-1\n" +
+             "D=M\n" +
+             "@THAT\n" +
+             "M=D\n" +
+
+             "@R13\n" +
+             "AM=M-1\n" +
+             "D=M\n" +
+             "@THIS\n" +
+             "M=D\n" +
+
+             "@R13\n" +
+             "AM=M-1\n" +
+             "D=M\n" +
+             "@ARG\n" +
+             "M=D\n" +
+
+             "@R13\n" +
+             "AM=M-1\n" +
+             "D=M\n" +
+             "@LCL\n" +
+             "M=D\n" +
+
+             "@R14\n" +
+             "A=M\n" +
+             "0;JMP\n"
+
+   return result
+end
+
 function clean_line( line )
    if line == nil or line == false
       return ""
@@ -500,6 +641,11 @@ function translate_line( line )
    end
 
    if parts.len() == 1
+
+     if parts[0] == "return"
+         return asm_return()
+      end
+
       if parts[0] == "add"
          return asm_add()
       end
@@ -552,6 +698,12 @@ function translate_line( line )
    end
 
    if parts.len() == 3
+         if parts[0] == "call"
+         return asm_call( parts[1], parts[2] )
+      end
+         if parts[0] == "function"
+         return asm_function( parts[1], parts[2] )
+      end
       if parts[0] == "push"
          return translate_push( parts[1], parts[2] )
       end
@@ -587,9 +739,9 @@ function translate_file( in_path )
       asm = translate_line( line )
 
       if asm != ""
-        result += "// " + line + "\n"
-        result += asm
-        result += "\n"
+         result += "// " + line + "\n"
+         result += asm
+         result += "\n"
       else
          printl( "unsupported: " + line )
       end
@@ -597,6 +749,37 @@ function translate_file( in_path )
 
    writeURI( out_path, result )
    printl( "done: " + out_path )
+end
+
+
+function merge_vm_outputs( folder )
+   parts = folder.split( "/" )
+   name = parts[ parts.len() - 1 ]
+
+   if name != "FibonacciElement"
+      if name != "StaticsTest"
+         return
+      end
+   end
+
+   out_path = folder + "/" + name + ".asm"
+
+   result = ""
+   result += "@256\nD=A\n@SP\nM=D\n"
+   result += asm_call( "Sys.init", "0" )
+
+   if name == "FibonacciElement"
+      result += readURI( folder + "/Main.asm" )
+      result += readURI( folder + "/Sys.asm" )
+   end
+
+   if name == "StaticsTest"
+      result += readURI( folder + "/Class1.asm" )
+      result += readURI( folder + "/Class2.asm" )
+      result += readURI( folder + "/Sys.asm" )
+   end
+
+   writeURI( out_path, result )
 end
 
 function walk_tree( root )
@@ -636,13 +819,12 @@ function walk_tree( root )
          translate_file( full )
       end
    end
-
+   merge_vm_outputs( root )
    d.close();
 end
 
 function main()
    walk_tree( "08" )
 end
-
 main()
 
