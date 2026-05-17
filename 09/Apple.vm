@@ -1,0 +1,297 @@
+function Apple.new 0
+push constant 5
+call Memory.alloc 1
+pop pointer 0
+push argument 0
+pop this 0
+push argument 1
+pop this 1
+push argument 2
+pop this 2
+push constant 0
+pop this 3
+push constant 0
+pop this 4
+push pointer 0
+return
+
+function Apple.dispose 0
+push argument 0
+pop pointer 0
+push pointer 0
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+return
+
+function Apple.draw 0
+push argument 0
+pop pointer 0
+push constant 1
+call Screen.setColor 1
+pop temp 0
+push this 0
+push this 1
+push this 2
+call Screen.drawCircle 3
+pop temp 0
+push this 0
+push this 1
+push this 2
+sub
+push this 0
+push constant 4
+add
+push this 1
+push this 2
+sub
+push constant 10
+sub
+call Screen.drawLine 4
+pop temp 0
+push this 3
+push constant 0
+eq
+not
+if-goto APPLE_D_ROT1
+push this 0
+push constant 8
+add
+push this 1
+push this 2
+sub
+push constant 8
+sub
+push constant 3
+call Screen.drawCircle 3
+pop temp 0
+goto APPLE_D_END
+label APPLE_D_ROT1
+push this 0
+push constant 2
+sub
+push this 1
+push this 2
+sub
+push constant 12
+sub
+push constant 3
+call Screen.drawCircle 3
+pop temp 0
+label APPLE_D_END
+push constant 0
+return
+
+function Apple.erase 0
+push argument 0
+pop pointer 0
+push constant 0
+call Screen.setColor 1
+pop temp 0
+push this 0
+push this 1
+push this 2
+call Screen.drawCircle 3
+pop temp 0
+push this 0
+push this 1
+push this 2
+sub
+push this 0
+push constant 4
+add
+push this 1
+push this 2
+sub
+push constant 10
+sub
+call Screen.drawLine 4
+pop temp 0
+push this 0
+push constant 8
+add
+push this 1
+push this 2
+sub
+push constant 8
+sub
+push constant 3
+call Screen.drawCircle 3
+pop temp 0
+push this 0
+push constant 2
+sub
+push this 1
+push this 2
+sub
+push constant 12
+sub
+push constant 3
+call Screen.drawCircle 3
+pop temp 0
+push constant 0
+return
+
+function Apple.moveLeft 0
+push argument 0
+pop pointer 0
+push this 0
+push this 2
+sub
+push constant 15
+gt
+not
+if-goto APPLE_ML_END
+push pointer 0
+call Apple.erase 1
+pop temp 0
+push this 0
+push constant 4
+sub
+pop this 0
+push pointer 0
+call Apple.draw 1
+pop temp 0
+label APPLE_ML_END
+push constant 0
+return
+
+function Apple.moveRight 0
+push argument 0
+pop pointer 0
+push this 0
+push this 2
+add
+push constant 495
+lt
+not
+if-goto APPLE_MR_END
+push pointer 0
+call Apple.erase 1
+pop temp 0
+push this 0
+push constant 4
+add
+pop this 0
+push pointer 0
+call Apple.draw 1
+pop temp 0
+label APPLE_MR_END
+push constant 0
+return
+
+function Apple.moveUp 0
+push argument 0
+pop pointer 0
+push this 1
+push this 2
+sub
+push constant 20
+gt
+not
+if-goto APPLE_MU_END
+push pointer 0
+call Apple.erase 1
+pop temp 0
+push this 1
+push constant 4
+sub
+pop this 1
+push pointer 0
+call Apple.draw 1
+pop temp 0
+label APPLE_MU_END
+push constant 0
+return
+
+function Apple.moveDown 0
+push argument 0
+pop pointer 0
+push this 1
+push this 2
+add
+push constant 235
+lt
+not
+if-goto APPLE_MD_END
+push pointer 0
+call Apple.erase 1
+pop temp 0
+push this 1
+push constant 4
+add
+pop this 1
+push pointer 0
+call Apple.draw 1
+pop temp 0
+label APPLE_MD_END
+push constant 0
+return
+
+function Apple.incSize 0
+push argument 0
+pop pointer 0
+push this 2
+push constant 40
+lt
+not
+if-goto APPLE_INC_END
+push pointer 0
+call Apple.erase 1
+pop temp 0
+push this 2
+push constant 2
+add
+pop this 2
+push pointer 0
+call Apple.draw 1
+pop temp 0
+label APPLE_INC_END
+push constant 0
+return
+
+function Apple.decSize 0
+push argument 0
+pop pointer 0
+push this 2
+push constant 10
+gt
+not
+if-goto APPLE_DEC_END
+push pointer 0
+call Apple.erase 1
+pop temp 0
+push this 2
+push constant 2
+sub
+pop this 2
+push pointer 0
+call Apple.draw 1
+pop temp 0
+label APPLE_DEC_END
+push constant 0
+return
+
+function Apple.rotate 0
+push argument 0
+pop pointer 0
+push pointer 0
+call Apple.erase 1
+pop temp 0
+push this 3
+push constant 1
+eq
+not
+if-goto APPLE_ROT_SET
+push constant 0
+pop this 3
+goto APPLE_ROT_DONE
+label APPLE_ROT_SET
+push constant 1
+pop this 3
+label APPLE_ROT_DONE
+push pointer 0
+call Apple.draw 1
+pop temp 0
+push constant 0
+return

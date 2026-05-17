@@ -1,9 +1,105 @@
 class Main {
     function void main() {
-        var TicTacToe game;
-        let game = TicTacToe.new();
-        do game.run();
-        do game.dispose();
+        var char key;
+        var boolean exit;
+        var int choice; // 1 = Sun (Shirel), 2 = Apple (Efrat)
+        var Sun sun;
+        var Apple apple;
+        var int actionCount;
+
+        let exit = false;
+        let actionCount = 0;
+
+        // תפריט בחירה ראשוני המותאם אישית לשמות שלכן
+        do Output.printString("Press 1 for Sun (Shirel), 2 for Apple (Efrat)");
+        do Output.println();
+
+        let choice = 0;
+        while (choice = 0) {
+            let key = Keyboard.keyPressed();
+            if (key = 49) { let choice = 1; } // מקש 1
+            if (key = 50) { let choice = 2; } // מקש 2
+        }
+
+        do Screen.clearScreen();
+
+        // אתחול האובייקט הנבחר
+        if (choice = 1) {
+            let sun = Sun.new(256, 128, 25);
+            do sun.draw();
+        }
+        if (choice = 2) {
+            let apple = Apple.new(256, 128, 22);
+            do apple.draw();
+        }
+
+        // לולאת תנועה ועקיבה בזמן אמת
+        while (~exit) {
+            let key = Keyboard.keyPressed();
+
+            if (key = 81) { let exit = true; } // מקש Q ליציאה וסיכום
+
+            // תנועה שמאלה (חץ שמאלי)
+            if (key = 130) {
+                if (choice = 1) { do sun.moveLeft(); }
+                if (choice = 2) { do apple.moveLeft(); }
+                let actionCount = actionCount + 1;
+            }
+            // תנועה ימינה (חץ ימני)
+            if (key = 132) {
+                if (choice = 1) { do sun.moveRight(); }
+                if (choice = 2) { do apple.moveRight(); }
+                let actionCount = actionCount + 1;
+            }
+            // תנועה למעלה (חץ עליון)
+            if (key = 131) {
+                if (choice = 1) { do sun.moveUp(); }
+                if (choice = 2) { do apple.moveUp(); }
+                let actionCount = actionCount + 1;
+            }
+            // תנועה למטה (חץ תחתון)
+            if (key = 133) {
+                if (choice = 1) { do sun.moveDown(); }
+                if (choice = 2) { do apple.moveDown(); }
+                let actionCount = actionCount + 1;
+            }
+            // הגדלת הצורה (מקש +)
+            if (key = 43) {
+                if (choice = 1) { do sun.incSize(); }
+                if (choice = 2) { do apple.incSize(); }
+                let actionCount = actionCount + 1;
+            }
+            // הקטנת הצורה (מקש -)
+            if (key = 45) {
+                if (choice = 1) { do sun.decSize(); }
+                if (choice = 2) { do apple.decSize(); }
+                let actionCount = actionCount + 1;
+            }
+            // טרנספורמציה וסיבוב (מקש R)
+            if (key = 82) {
+                if (choice = 1) { do sun.rotate(); }
+                if (choice = 2) { do apple.rotate(); }
+                let actionCount = actionCount + 1;
+            }
+
+            do Sys.wait(70); // השהייה קלה למניעת כפל לחיצות מהיר מדי
+        }
+
+        // הדפסת פלט סיכום סופי כנדרש במטלה
+        do Screen.clearScreen();
+        do Output.moveCursor(0, 0);
+        do Output.printString("--- Project 09: Submission Summary ---");
+        do Output.println();
+        do Output.printString("Students: Shirel & Efrat");
+        do Output.println();
+        do Output.printString("Selected Object: ");
+        if (choice = 1) { do Output.printString("Sun (S for Shirel)"); }
+        if (choice = 2) { do Output.printString("Apple (A for Efrat)"); }
+        do Output.println();
+        do Output.printString("Total User Actions Tracked: ");
+        do Output.printInt(actionCount);
+        do Output.println();
+
         return;
     }
 }

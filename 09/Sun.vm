@@ -1,0 +1,489 @@
+function Sun.new 0
+push constant 5
+call Memory.alloc 1
+pop pointer 0
+push argument 0
+pop this 0
+push argument 1
+pop this 1
+push argument 2
+pop this 2
+push constant 0
+pop this 3
+push constant 0
+pop this 4
+push pointer 0
+return
+
+function Sun.dispose 0
+push argument 0
+pop pointer 0
+push pointer 0
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+return
+
+function Sun.draw 0
+push argument 0
+pop pointer 0
+push constant 1
+call Screen.setColor 1
+pop temp 0
+push this 0
+push this 1
+push this 2
+call Screen.drawCircle 3
+pop temp 0
+push this 0
+push this 1
+push this 2
+sub
+push this 0
+push this 1
+push this 2
+sub
+push constant 12
+sub
+call Screen.drawLine 4
+pop temp 0
+push this 0
+push this 1
+push this 2
+add
+push this 0
+push this 1
+push this 2
+add
+push constant 12
+add
+call Screen.drawLine 4
+pop temp 0
+push this 0
+push this 2
+sub
+push this 1
+push this 0
+push this 2
+sub
+push constant 12
+sub
+push this 1
+call Screen.drawLine 4
+pop temp 0
+push this 0
+push this 2
+add
+push this 1
+push this 0
+push this 2
+add
+push constant 12
+add
+push this 1
+call Screen.drawLine 4
+pop temp 0
+push this 0
+push this 2
+sub
+push constant 4
+add
+push this 1
+push this 2
+sub
+push constant 4
+add
+push this 0
+push this 2
+sub
+push constant 8
+sub
+push this 1
+push this 2
+sub
+push constant 8
+sub
+call Screen.drawLine 4
+pop temp 0
+push this 0
+push this 2
+add
+push constant 4
+sub
+push this 1
+push this 2
+sub
+push constant 4
+add
+push this 0
+push this 2
+add
+push constant 8
+add
+push this 1
+push this 2
+sub
+push constant 8
+sub
+call Screen.drawLine 4
+pop temp 0
+push this 0
+push this 2
+sub
+push constant 4
+add
+push this 1
+push this 2
+add
+push constant 4
+sub
+push this 0
+push this 2
+sub
+push constant 8
+sub
+push this 1
+push this 2
+add
+push constant 8
+add
+call Screen.drawLine 4
+pop temp 0
+push this 0
+push this 2
+add
+push constant 4
+sub
+push this 1
+push this 2
+add
+push constant 4
+sub
+push this 0
+push this 2
+add
+push constant 8
+add
+push this 1
+push this 2
+add
+push constant 8
+add
+call Screen.drawLine 4
+pop temp 0
+push constant 0
+return
+
+function Sun.erase 0
+push argument 0
+pop pointer 0
+push constant 0
+call Screen.setColor 1
+pop temp 0
+push this 0
+push this 1
+push this 2
+call Screen.drawCircle 3
+pop temp 0
+push this 0
+push this 1
+push this 2
+sub
+push this 0
+push this 1
+push this 2
+sub
+push constant 12
+sub
+call Screen.drawLine 4
+pop temp 0
+push this 0
+push this 1
+push this 2
+add
+push this 0
+push this 1
+push this 2
+add
+push constant 12
+add
+call Screen.drawLine 4
+pop temp 0
+push this 0
+push this 2
+sub
+push this 1
+push this 0
+push this 2
+sub
+push constant 12
+sub
+push this 1
+call Screen.drawLine 4
+pop temp 0
+push this 0
+push this 2
+add
+push this 1
+push this 0
+push this 2
+add
+push constant 12
+add
+push this 1
+call Screen.drawLine 4
+pop temp 0
+push this 0
+push this 2
+sub
+push constant 4
+add
+push this 1
+push this 2
+sub
+push constant 4
+add
+push this 0
+push this 2
+sub
+push constant 8
+sub
+push this 1
+push this 2
+sub
+push constant 8
+sub
+call Screen.drawLine 4
+pop temp 0
+push this 0
+push this 2
+add
+push constant 4
+sub
+push this 1
+push this 2
+sub
+push constant 4
+add
+push this 0
+push this 2
+add
+push constant 8
+add
+push this 1
+push this 2
+sub
+push constant 8
+sub
+call Screen.drawLine 4
+pop temp 0
+push this 0
+push this 2
+sub
+push constant 4
+add
+push this 1
+push this 2
+add
+push constant 4
+sub
+push this 0
+push this 2
+sub
+push constant 8
+sub
+push this 1
+push this 2
+add
+push constant 8
+add
+call Screen.drawLine 4
+pop temp 0
+push this 0
+push this 2
+add
+push constant 4
+sub
+push this 1
+push this 2
+add
+push constant 4
+sub
+push this 0
+push this 2
+add
+push constant 8
+add
+push this 1
+push this 2
+add
+push constant 8
+add
+call Screen.drawLine 4
+pop temp 0
+push constant 0
+return
+
+function Sun.moveLeft 0
+push argument 0
+pop pointer 0
+push this 0
+push this 2
+sub
+push constant 15
+gt
+not
+if-goto SUN_ML_END
+push pointer 0
+call Sun.erase 1
+pop temp 0
+push this 0
+push constant 4
+sub
+pop this 0
+push pointer 0
+call Sun.draw 1
+pop temp 0
+label SUN_ML_END
+push constant 0
+return
+
+function Sun.moveRight 0
+push argument 0
+pop pointer 0
+push this 0
+push this 2
+add
+push constant 495
+lt
+not
+if-goto SUN_MR_END
+push pointer 0
+call Sun.erase 1
+pop temp 0
+push this 0
+push constant 4
+add
+pop this 0
+push pointer 0
+call Sun.draw 1
+pop temp 0
+label SUN_MR_END
+push constant 0
+return
+
+function Sun.moveUp 0
+push argument 0
+pop pointer 0
+push this 1
+push this 2
+sub
+push constant 15
+gt
+not
+if-goto SUN_MU_END
+push pointer 0
+call Sun.erase 1
+pop temp 0
+push this 1
+push constant 4
+sub
+pop this 1
+push pointer 0
+call Sun.draw 1
+pop temp 0
+label SUN_MU_END
+push constant 0
+return
+
+function Sun.moveDown 0
+push argument 0
+pop pointer 0
+push this 1
+push this 2
+add
+push constant 235
+lt
+not
+if-goto SUN_MD_END
+push pointer 0
+call Sun.erase 1
+pop temp 0
+push this 1
+push constant 4
+add
+pop this 1
+push pointer 0
+call Sun.draw 1
+pop temp 0
+label SUN_MD_END
+push constant 0
+return
+
+function Sun.incSize 0
+push argument 0
+pop pointer 0
+push this 2
+push constant 40
+lt
+not
+if-goto SUN_INC_END
+push pointer 0
+call Sun.erase 1
+pop temp 0
+push this 2
+push constant 2
+add
+pop this 2
+push pointer 0
+call Sun.draw 1
+pop temp 0
+label SUN_INC_END
+push constant 0
+return
+
+function Sun.decSize 0
+push argument 0
+pop pointer 0
+push this 2
+push constant 10
+gt
+not
+if-goto SUN_DEC_END
+push pointer 0
+call Sun.erase 1
+pop temp 0
+push this 2
+push constant 2
+sub
+pop this 2
+push pointer 0
+call Sun.draw 1
+pop temp 0
+label SUN_DEC_END
+push constant 0
+return
+
+function Sun.rotate 0
+push argument 0
+pop pointer 0
+push pointer 0
+call Sun.erase 1
+pop temp 0
+push this 3
+push constant 1
+eq
+not
+if-goto SUN_ROT_SET
+push constant 0
+pop this 3
+goto SUN_ROT_DONE
+label SUN_ROT_SET
+push constant 1
+pop this 3
+label SUN_ROT_DONE
+push pointer 0
+call Sun.draw 1
+pop temp 0
+push constant 0
+return

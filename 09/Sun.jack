@@ -1,0 +1,128 @@
+class Sun {
+    field int x, y;       // מיקום מרכז השמש
+    field int r;       // רדיוס השמש
+    field int state;   // מצב הסיבוב של הקרניים
+
+    constructor Sun new(int Ax, int Ay, int Ar) {
+        let x = Ax;
+        let y = Ay;
+        let r = Ar;
+        let state = 0;
+        return this;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method void draw() {
+        do Screen.setColor(true);
+        // ציור גוף השמש
+        do Screen.drawCircle(x, y, r);
+        
+        // ציור 4 קרניים ישרות (למעלה, למטה, ימין, שמאל)
+        do Screen.drawLine(x, y - r, x, y - r - 12);
+        do Screen.drawLine(x, y + r, x, y + r + 12);
+        do Screen.drawLine(x - r, y, x - r - 12, y);
+        do Screen.drawLine(x + r, y, x + r + 12, y);
+
+        // ציור 4 קרניים אלכסוניות (משתנות לפי מצב ה-Rotate)
+        if (state = 0) {
+            do Screen.drawLine(x - r + 4, y - r + 4, x - r - 8, y - r - 8);
+            do Screen.drawLine(x + r - 4, y - r + 4, x + r + 8, y - r - 8);
+            do Screen.drawLine(x - r + 4, y + r - 4, x - r - 8, y + r + 8);
+            do Screen.drawLine(x + r - 4, y + r - 4, x + r + 8, y + r + 8);
+        } else {
+            // במצב סיבוב, הקרניים האלכסוניות מתארכות ומשנות מיקום קל
+            do Screen.drawLine(x - r + 2, y - r + 6, x - r - 12, y - r - 4);
+            do Screen.drawLine(x + r - 2, y - r + 6, x + r + 12, y - r - 4);
+            do Screen.drawLine(x - r + 2, y + r - 6, x - r - 12, y + r + 4);
+            do Screen.drawLine(x + r - 2, y + r - 6, x + r + 12, y + r + 4);
+        }
+        return;
+    }
+
+    method void erase() {
+        do Screen.setColor(false);
+        do Screen.drawCircle(x, y, r);
+        do Screen.drawLine(x, y - r, x, y - r - 12);
+        do Screen.drawLine(x, y + r, x, y + r + 12);
+        do Screen.drawLine(x - r, y, x - r - 12, y);
+        do Screen.drawLine(x + r, y, x + r + 12, y);
+        do Screen.drawLine(x - r + 4, y - r + 4, x - r - 8, y - r - 8);
+        do Screen.drawLine(x + r - 4, y - r + 4, x + r + 8, y - r - 8);
+        do Screen.drawLine(x - r + 4, y + r - 4, x - r - 8, y + r + 8);
+        do Screen.drawLine(x + r - 4, y + r - 4, x + r + 8, y + r + 8);
+        do Screen.drawLine(x - r + 2, y - r + 6, x - r - 12, y - r - 4);
+        do Screen.drawLine(x + r - 2, y - r + 6, x + r + 12, y - r - 4);
+        do Screen.drawLine(x - r + 2, y + r - 6, x - r - 12, y + r + 4);
+        do Screen.drawLine(x + r - 2, y + r - 6, x + r + 12, y + r + 4);
+        return;
+    }
+
+    method void moveLeft() {
+        if ((x - r) > 15) {
+            do erase();
+            let x = x - 4;
+            do draw();
+        }
+        return;
+    }
+
+    method void moveRight() {
+        if ((x + r) < 495) {
+            do erase();
+            let x = x + 4;
+            do draw();
+        }
+        return;
+    }
+
+    method void moveUp() {
+        if ((y - r) > 15) {
+            do erase();
+            let y = y - 4;
+            do draw();
+        }
+        return;
+    }
+
+    method void moveDown() {
+        if ((y + r) < 235) {
+            do erase();
+            let y = y + 4;
+            do draw();
+        }
+        return;
+    }
+
+    method void incSize() {
+        if (r < 40) {
+            do erase();
+            let r = r + 2;
+            do draw();
+        }
+        return;
+    }
+
+    method void decSize() {
+        if (r > 10) {
+            do erase();
+            let r = r - 2;
+            do draw();
+        }
+        return;
+    }
+
+    method void rotate() {
+        do erase();
+        if (state = 1) {
+            let state = 0;
+        } else {
+            let state = 1;
+        }
+        do draw();
+        return;
+    }
+}

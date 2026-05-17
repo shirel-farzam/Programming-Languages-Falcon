@@ -1,11 +1,308 @@
-function Main.main 1
-call TicTacToe.new 0
+function Main.main 5
+push constant 0
+pop local 1
+push constant 0
+pop local 4
+push constant 46
+call String.new 1
+pop local 2
+push local 2
+push constant 83
+call String.appendChar 2
+push constant 101
+call String.appendChar 2
+push constant 108
+call String.appendChar 2
+push constant 101
+call String.appendChar 2
+push constant 99
+call String.appendChar 2
+push constant 116
+call String.appendChar 2
+push constant 32
+call String.appendChar 2
+push constant 79
+call String.appendChar 2
+push constant 98
+call String.appendChar 2
+push constant 106
+call String.appendChar 2
+push constant 101
+call String.appendChar 2
+push constant 99
+call String.appendChar 2
+push constant 116
+call String.appendChar 2
+push constant 58
+call String.appendChar 2
+push constant 32
+call String.appendChar 2
+push constant 49
+call String.appendChar 2
+push constant 61
+call String.appendChar 2
+push constant 83
+call String.appendChar 2
+push constant 117
+call String.appendChar 2
+push constant 110
+call String.appendChar 2
+push constant 44
+call String.appendChar 2
+push constant 32
+call String.appendChar 2
+push constant 50
+call String.appendChar 2
+push constant 61
+call String.appendChar 2
+push constant 65
+call String.appendChar 2
+push constant 112
+call String.appendChar 2
+push constant 112
+call String.appendChar 2
+push constant 108
+call String.appendChar 2
+push constant 101
+call String.appendChar 2
+call Output.printString 1
+pop temp 0
+call Output.println 0
+pop temp 0
+push constant 0
+pop local 3
+label WHILE_EXP_1
+push local 3
+push constant 0
+eq
+not
+if-goto WHILE_END_1
+call Keyboard.keyPressed 0
 pop local 0
 push local 0
-call TicTacToe.run 1
-pop temp 0
+push constant 49
+eq
+not
+if-goto IF_FALSE_1
+push constant 1
+pop local 3
+label IF_FALSE_1
 push local 0
-call TicTacToe.dispose 1
+push constant 50
+eq
+not
+if-goto IF_FALSE_2
+push constant 2
+pop local 3
+label IF_FALSE_2
+goto WHILE_EXP_1
+label WHILE_END_1
+call Screen.clearScreen 0
+pop temp 0
+push local 3
+push constant 1
+eq
+not
+if-goto IF_FALSE_3
+push constant 256
+push constant 128
+push constant 25
+call Sun.new 3
+pop local 1
+push local 1
+call Sun.draw 1
+pop temp 0
+label IF_FALSE_3
+push local 3
+push constant 2
+eq
+not
+if-goto IF_FALSE_4
+push constant 256
+push constant 128
+push constant 22
+call Apple.new 3
+pop local 4
+push local 4
+call Apple.draw 1
+pop temp 0
+label IF_FALSE_4
+push constant 0
+pop local 0
+label GAME_LOOP
+push local 0
+push constant 81
+eq
+if-goto GAME_END
+call Keyboard.keyPressed 0
+pop local 0
+push local 0
+push constant 130
+eq
+not
+if-goto MOVE_RIGHT
+push local 3
+push constant 1
+eq
+not
+if-goto MOVE_L_APPLE
+push local 1
+call Sun.moveLeft 1
+pop temp 0
+label MOVE_L_APPLE
+push local 3
+push constant 2
+eq
+not
+if-goto MOVE_RIGHT
+push local 4
+call Apple.moveLeft 1
+pop temp 0
+label MOVE_RIGHT
+push local 0
+push constant 132
+eq
+not
+if-goto MOVE_UP
+push local 3
+push constant 1
+eq
+not
+if-goto MOVE_R_APPLE
+push local 1
+call Sun.moveRight 1
+pop temp 0
+label MOVE_R_APPLE
+push local 3
+push constant 2
+eq
+not
+if-goto MOVE_UP
+push local 4
+call Apple.moveRight 1
+pop temp 0
+label MOVE_UP
+push local 0
+push constant 131
+eq
+not
+if-goto MOVE_DOWN
+push local 3
+push constant 1
+eq
+not
+if-goto MOVE_U_APPLE
+push local 1
+call Sun.moveUp 1
+pop temp 0
+label MOVE_U_APPLE
+push local 3
+push constant 2
+eq
+not
+if-goto MOVE_DOWN
+push local 4
+call Apple.moveUp 1
+pop temp 0
+label MOVE_DOWN
+push local 0
+push constant 133
+eq
+not
+if-goto SIZE_INC
+push local 3
+push constant 1
+eq
+not
+if-goto MOVE_D_APPLE
+push local 1
+call Sun.moveDown 1
+pop temp 0
+label MOVE_D_APPLE
+push local 3
+push constant 2
+eq
+not
+if-goto SIZE_INC
+push local 4
+call Apple.moveDown 1
+pop temp 0
+label SIZE_INC
+push local 0
+push constant 43
+eq
+not
+if-goto SIZE_DEC
+push local 3
+push constant 1
+eq
+not
+if-goto INC_APPLE
+push local 1
+call Sun.incSize 1
+pop temp 0
+label INC_APPLE
+push local 3
+push constant 2
+eq
+not
+if-goto SIZE_DEC
+push local 4
+call Apple.incSize 1
+pop temp 0
+label SIZE_DEC
+push local 0
+push constant 45
+eq
+not
+if-goto ROTATE_OBJ
+push local 3
+push constant 1
+eq
+not
+if-goto DEC_APPLE
+push local 1
+call Sun.decSize 1
+pop temp 0
+label DEC_APPLE
+push local 3
+push constant 2
+eq
+not
+if-goto ROTATE_OBJ
+push local 4
+call Apple.decSize 1
+pop temp 0
+label ROTATE_OBJ
+push local 0
+push constant 82
+eq
+not
+if-goto LOOP_WAIT
+push local 3
+push constant 1
+eq
+not
+if-goto ROT_APPLE
+push local 1
+call Sun.rotate 1
+pop temp 0
+label ROT_APPLE
+push local 3
+push constant 2
+eq
+not
+if-goto LOOP_WAIT
+push local 4
+call Apple.rotate 1
+pop temp 0
+label LOOP_WAIT
+push constant 50
+call Sys.wait 1
+pop temp 0
+goto GAME_LOOP
+label GAME_END
+call Screen.clearScreen 0
 pop temp 0
 push constant 0
 return

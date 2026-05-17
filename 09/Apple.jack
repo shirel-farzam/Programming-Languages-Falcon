@@ -1,0 +1,109 @@
+class Apple {
+    field int x, y;       // מיקום מרכז התפוח
+    field int r;       // רדיוס הגוף של התפוח
+    field int leafPos; // מיקום העלה (משתנה בסיבוב)
+
+    constructor Apple new(int Ax, int Ay, int Ar) {
+        let x = Ax;
+        let y = Ay;
+        let r = Ar;
+        let leafPos = 0;
+        return this;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method void draw() {
+        do Screen.setColor(true);
+        // גוף התפוח
+        do Screen.drawCircle(x, y, r);
+        
+        // גבעול אלכסוני עליון
+        do Screen.drawLine(x, y - r, x + 4, y - r - 10);
+
+        // ציור העלה (משנה מיקום לפי מקש R)
+        if (leafPos = 0) {
+            do Screen.drawCircle(x + 8, y - r - 8, 3); // עלה בצד ימין של הגבעול
+        } else {
+            do Screen.drawCircle(x - 2, y - r - 12, 3); // עלה זז לצד שמאל למעלה
+        }
+        return;
+    }
+
+    method void erase() {
+        do Screen.setColor(false);
+        do Screen.drawCircle(x, y, r);
+        do Screen.drawLine(x, y - r, x + 4, y - r - 10);
+        do Screen.drawCircle(x + 8, y - r - 8, 3);
+        do Screen.drawCircle(x - 2, y - r - 12, 3);
+        return;
+    }
+
+    method void moveLeft() {
+        if ((x - r) > 15) {
+            do erase();
+            let x = x - 4;
+            do draw();
+        }
+        return;
+    }
+
+    method void moveRight() {
+        if ((x + r) < 495) {
+            do erase();
+            let x = x + 4;
+            do draw();
+        }
+        return;
+    }
+
+    method void moveUp() {
+        if ((y - r) > 20) {
+            do erase();
+            let y = y - 4;
+            do draw();
+        }
+        return;
+    }
+
+    method void moveDown() {
+        if ((y + r) < 235) {
+            do erase();
+            let y = y + 4;
+            do draw();
+        }
+        return;
+    }
+
+    method void incSize() {
+        if (r < 40) {
+            do erase();
+            let r = r + 2;
+            do draw();
+        }
+        return;
+    }
+
+    method void decSize() {
+        if (r > 10) {
+            do erase();
+            let r = r - 2;
+            do draw();
+        }
+        return;
+    }
+
+    method void rotate() {
+        do erase();
+        if (leafPos = 1) {
+            let leafPos = 0;
+        } else {
+            let leafPos = 1;
+        }
+        do draw();
+        return;
+    }
+}
